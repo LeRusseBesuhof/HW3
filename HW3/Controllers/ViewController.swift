@@ -3,12 +3,14 @@ import UIKit
 class ViewController: UIViewController {
 
     lazy var frameWidthWithOffsets = view.frame.width - 60
+    lazy var dataLabelText = "Имя Фамилия"
+    lazy var profileDescription = ""
     
     lazy var viewField : UIView = {
         $0.backgroundColor = UIColor(red: 241/255, green: 241/255, blue: 241/255, alpha: 1)
         $0.layer.cornerRadius = 30
         return $0
-    }(UIView(frame: CGRect(x: 30, y: 101, width: frameWidthWithOffsets, height: 110)))
+    }(UIView(frame: CGRect(x: 30, y: 130, width: frameWidthWithOffsets, height: 110)))
     
     lazy var profilePictureOriginX = viewField.frame.origin.x + 17
     lazy var profilePictureOriginY = viewField.frame.origin.y + 18
@@ -24,7 +26,7 @@ class ViewController: UIViewController {
     lazy var dataLabelOriginY = viewField.frame.origin.y + 29
     lazy var dataLabelWidthWithOffsets = viewField.frame.width - profilePicture.frame.width - 51
     lazy var dataLabel : UILabel = {
-        $0.text = "Имя Фамилия"
+        $0.text = dataLabelText
         $0.font = UIFont.systemFont(ofSize: 16, weight: UIFont.Weight(700))
         return $0
     }(UILabel(frame: CGRect(x: dataLabelOriginX, y: dataLabelOriginY, width: dataLabelWidthWithOffsets, height: 19)))
@@ -34,30 +36,48 @@ class ViewController: UIViewController {
     lazy var editButton = createButton(
         withOrigin: CGRect(x: dataLabelOriginX, y: editButtonOriginY, width: editButtonWidthWithOffsets, height: 30),
         backgroundColor: UIColor(red: 0/255, green: 87/255, blue: 255/255, alpha: 1),
+        action: editAction,
         cornerRadius: 10,
         title: "Редактировать")
+    
+    lazy var editAction = UIAction { [weak self] _ in
+        let settingsVC = SettingsViewController()
+        
+        self?.navigationController?.pushViewController(settingsVC, animated: true)
+    }
+    
+    lazy var openProfileAction = UIAction { [weak self] _ in
+        let openedProfileVC = OpenedProfileViewController()
+        openedProfileVC.dataLabelText = self?.dataLabelText ?? "Имя Фамилия"
+        openedProfileVC.profileDescription = self?.profileDescription ?? ""
+        
+        self?.navigationController?.pushViewController(openedProfileVC, animated: true)
+    }
     
     lazy var nextButtonOriginX = viewField.frame.maxX - 51
     lazy var nextButtonWidth = viewField.frame.width - 319
     lazy var nextButton = createButton(
         withOrigin: CGRect(x: nextButtonOriginX, y: viewField.frame.origin.y, width: nextButtonWidth, height: viewField.frame.height),
         backgroundColor: UIColor(red: 241/255, green: 241/255, blue: 241/255, alpha: 1),
+        action: openProfileAction,
         cornerRadius: 30, image: UIImage(systemName: "chevron.forward"))
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
+        navigationItem.title = "Главная"
         
         [viewField, profilePicture, dataLabel, editButton, nextButton].forEach{ view.addSubview($0)}
     }
     
-    func createButton(withOrigin rect: CGRect, backgroundColor: UIColor, cornerRadius: CGFloat = 0, title: String? = "", image: UIImage? = nil) -> UIButton {
-        let button = UIButton(frame: rect)
+    func createButton(withOrigin rect: CGRect, backgroundColor: UIColor, action: UIAction, cornerRadius: CGFloat = 0, title: String? = "", image: UIImage? = nil) -> UIButton {
+        let button = UIButton(primaryAction: action)
+        button.frame = rect
         button.backgroundColor = backgroundColor
         button.layer.cornerRadius = cornerRadius
         button.setTitle(title, for: .normal)
-        if let img = image {
-            button.setImage(image, for: .normal)
-        }
+        button.setTitleColor(.white, for: .normal)
+        if let _ = image { button.setImage(image, for: .normal) }
         return button
     }
 }
