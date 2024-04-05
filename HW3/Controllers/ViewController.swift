@@ -1,40 +1,36 @@
 import UIKit
 
+protocol ViewControllerDelegate : AnyObject {
+    func setUserData(name: String, surname: String, description: String)
+}
+
 class ViewController: UIViewController {
 
-    lazy var frameWidthWithOffsets = view.frame.width - 60
-    lazy var dataLabelText = "Имя Фамилия"
     lazy var profileDescription = ""
     
     lazy var viewField : UIView = {
         $0.backgroundColor = UIColor(red: 241/255, green: 241/255, blue: 241/255, alpha: 1)
         $0.layer.cornerRadius = 30
         return $0
-    }(UIView(frame: CGRect(x: 30, y: 130, width: frameWidthWithOffsets, height: 110)))
+    }(UIView(frame: CGRect(x: 30, y: 130, width: view.frame.width - 60, height: 110)))
     
-    lazy var profilePictureOriginX = viewField.frame.origin.x + 17
-    lazy var profilePictureOriginY = viewField.frame.origin.y + 18
     lazy var profilePicture : UIImageView = {
         $0.layer.cornerRadius = 20
         $0.image = .profilePict
         $0.clipsToBounds = true
         $0.contentMode = .scaleAspectFill
         return $0
-    }(UIImageView(frame: CGRect(x: profilePictureOriginX, y: profilePictureOriginY, width: 75, height: 75)))
+    }(UIImageView(frame: CGRect(x: viewField.frame.origin.x + 17, y: viewField.frame.origin.y + 18, width: 75, height: 75)))
     
-    lazy var dataLabelOriginX = profilePicture.frame.maxX + 12
-    lazy var dataLabelOriginY = viewField.frame.origin.y + 29
     lazy var dataLabelWidthWithOffsets = viewField.frame.width - profilePicture.frame.width - 51
     lazy var dataLabel : UILabel = {
-        $0.text = dataLabelText
+        $0.text = "Имя Фамилия"
         $0.font = UIFont.systemFont(ofSize: 16, weight: UIFont.Weight(700))
         return $0
-    }(UILabel(frame: CGRect(x: dataLabelOriginX, y: dataLabelOriginY, width: dataLabelWidthWithOffsets, height: 19)))
+    }(UILabel(frame: CGRect(x: profilePicture.frame.maxX + 12, y: viewField.frame.origin.y + 29, width: dataLabelWidthWithOffsets, height: 19)))
     
-    lazy var editButtonOriginY = dataLabel.frame.maxY + 7
-    lazy var editButtonWidthWithOffsets = dataLabelWidthWithOffsets - 68
     lazy var editButton = createButton(
-        withOrigin: CGRect(x: dataLabelOriginX, y: editButtonOriginY, width: editButtonWidthWithOffsets, height: 30),
+        withOrigin: CGRect(x: profilePicture.frame.maxX + 12, y: dataLabel.frame.maxY + 7, width: dataLabelWidthWithOffsets - 68, height: 30),
         backgroundColor: UIColor(red: 0/255, green: 87/255, blue: 255/255, alpha: 1),
         action: editAction,
         cornerRadius: 10,
@@ -42,22 +38,21 @@ class ViewController: UIViewController {
     
     lazy var editAction = UIAction { [weak self] _ in
         let settingsVC = SettingsViewController()
+        settingsVC.delegate = self
         
         self?.navigationController?.pushViewController(settingsVC, animated: true)
     }
     
     lazy var openProfileAction = UIAction { [weak self] _ in
         let openedProfileVC = OpenedProfileViewController()
-        openedProfileVC.dataLabelText = self?.dataLabelText ?? "Имя Фамилия"
+        openedProfileVC.dataLabelText = self?.dataLabel.text ?? "Имя Фамилия"
         openedProfileVC.profileDescription = self?.profileDescription ?? ""
         
         self?.navigationController?.pushViewController(openedProfileVC, animated: true)
     }
     
-    lazy var nextButtonOriginX = viewField.frame.maxX - 51
-    lazy var nextButtonWidth = viewField.frame.width - 319
     lazy var nextButton = createButton(
-        withOrigin: CGRect(x: nextButtonOriginX, y: viewField.frame.origin.y, width: nextButtonWidth, height: viewField.frame.height),
+        withOrigin: CGRect(x: viewField.frame.maxX - 51, y: viewField.frame.origin.y, width: viewField.frame.width - 319, height: viewField.frame.height),
         backgroundColor: UIColor(red: 241/255, green: 241/255, blue: 241/255, alpha: 1),
         action: openProfileAction,
         cornerRadius: 30, image: UIImage(systemName: "chevron.forward"))
@@ -82,3 +77,9 @@ class ViewController: UIViewController {
     }
 }
 
+extension ViewController : ViewControllerDelegate {
+    func setUserData(name: String, surname: String, description: String) {
+        dataLabel.text = "\(name) \(surname)"
+        profileDescription = description
+    }
+}

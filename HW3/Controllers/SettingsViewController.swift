@@ -1,35 +1,27 @@
 import UIKit
 
 class SettingsViewController: UIViewController {
-
-    lazy var labelFrameWidthWithOffsets = view.frame.width - 84
-    lazy var defaultFrameWidthWithOffsets = view.frame.width - 60
-    lazy var textViewDefaultBackgroundColor = UIColor(red: 241/255, green: 241/255, blue: 241/255, alpha: 1)
     
-    lazy var nameLabel = createTextLabel(withOrigin: CGRect(x: 42, y: 130, width: labelFrameWidthWithOffsets, height: 19), text: "Имя")
+    weak var delegate : ViewControllerDelegate?
     
-    lazy var nameTextFieldOriginY = nameLabel.frame.maxY + 5
+    lazy var nameLabel = createTextLabel(withOrigin: CGRect(x: 42, y: 130, width: view.frame.width - 84, height: 19), text: "Имя")
+    
     lazy var nameTextField = createTextField(
-        withOrigin: CGRect(x: 30, y: nameTextFieldOriginY, width: defaultFrameWidthWithOffsets, height: 51),
-        backgroundColor: textViewDefaultBackgroundColor)
+        withOrigin: CGRect(x: 30, y: nameLabel.frame.maxY + 5, width: view.frame.width - 60, height: 51),
+        backgroundColor: UIColor(red: 241/255, green: 241/255, blue: 241/255, alpha: 1))
     
-    lazy var surnameLabelOriginY = nameTextField.frame.maxY + 22
-    lazy var surnameLabel = createTextLabel(withOrigin: CGRect(x: 42, y: surnameLabelOriginY, width: labelFrameWidthWithOffsets, height: 19), text: "Фамилия")
+    lazy var surnameLabel = createTextLabel(withOrigin: CGRect(x: 42, y: nameTextField.frame.maxY + 22, width: view.frame.width - 84, height: 19), text: "Фамилия")
     
-    lazy var surnameTextFieldOriginY = surnameLabel.frame.maxY + 5
     lazy var surnameTextField = createTextField(
-        withOrigin: CGRect(x: 30, y: surnameTextFieldOriginY, width: defaultFrameWidthWithOffsets, height: 51),
-        backgroundColor: textViewDefaultBackgroundColor)
+        withOrigin: CGRect(x: 30, y: surnameLabel.frame.maxY + 5, width: view.frame.width - 60, height: 51),
+        backgroundColor: UIColor(red: 241/255, green: 241/255, blue: 241/255, alpha: 1))
     
-    lazy var descriptionLabelOriginY = surnameTextField.frame.maxY + 22
-    lazy var descriptionLabel = createTextLabel(withOrigin: CGRect(x: 42, y: descriptionLabelOriginY, width: labelFrameWidthWithOffsets, height: 19), text: "Описание")
+    lazy var descriptionLabel = createTextLabel(withOrigin: CGRect(x: 42, y: surnameTextField.frame.maxY + 22, width: view.frame.width - 84, height: 19), text: "Описание")
     
-    lazy var descriptionTextViewOriginY = descriptionLabel.frame.maxY + 5
-    lazy var descriptionTextView = createTextView(withOrigin: CGRect(x: 30, y: descriptionTextViewOriginY, width: defaultFrameWidthWithOffsets, height: 144), backgroundColor: textViewDefaultBackgroundColor)
+    lazy var descriptionTextView = createTextView(withOrigin: CGRect(x: 30, y: descriptionLabel.frame.maxY + 5, width: view.frame.width - 60, height: 144), backgroundColor: UIColor(red: 241/255, green: 241/255, blue: 241/255, alpha: 1))
     
-    lazy var saveButtonOriginY = descriptionTextView.frame.maxY + 340
     lazy var saveButton : UIButton = {
-        $0.frame = CGRect(x: 30, y: saveButtonOriginY, width: defaultFrameWidthWithOffsets, height: 60)
+        $0.frame = CGRect(x: 30, y: descriptionTextView.frame.maxY + 340, width: view.frame.width - 60, height: 60)
         $0.backgroundColor = UIColor(red: 0/255, green: 87/255, blue: 255/255, alpha: 1)
         $0.layer.cornerRadius = 30
         $0.setTitle("Сохранить", for: .normal)
@@ -38,12 +30,8 @@ class SettingsViewController: UIViewController {
     }(UIButton(primaryAction: saveAction))
     
     lazy var saveAction = UIAction { [weak self] _ in
-        let mainVC = ViewController()
-        
-        mainVC.dataLabelText = "\(self?.nameTextField.text ?? "Имя") \(self?.surnameTextField.text ?? "Фамилия")"
-        mainVC.profileDescription = self?.descriptionTextView.text ?? ""
-        
-        self?.navigationController?.pushViewController(mainVC, animated: true)
+        self?.delegate?.setUserData(name: self?.nameTextField.text ?? "Имя", surname: self?.surnameTextField.text ?? "Фамилия", description: self?.descriptionTextView.text ?? "")
+        self?.navigationController?.popViewController(animated: true)
     }
     
     override func viewDidLoad() {
