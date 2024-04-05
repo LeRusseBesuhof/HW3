@@ -21,7 +21,7 @@ class SettingsViewController: UIViewController {
     lazy var descriptionTextView = createTextView(withOrigin: CGRect(x: 30, y: descriptionLabel.frame.maxY + 5, width: view.frame.width - 60, height: 144), backgroundColor: UIColor(red: 241/255, green: 241/255, blue: 241/255, alpha: 1))
     
     lazy var saveButton : UIButton = {
-        $0.frame = CGRect(x: 30, y: descriptionTextView.frame.maxY + 340, width: view.frame.width - 60, height: 60)
+        $0.frame = CGRect(x: 30, y: view.frame.height - 100, width: view.frame.width - 60, height: 60)
         $0.backgroundColor = UIColor(red: 0/255, green: 87/255, blue: 255/255, alpha: 1)
         $0.layer.cornerRadius = 30
         $0.setTitle("Сохранить", for: .normal)
